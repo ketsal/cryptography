@@ -10,70 +10,70 @@
 class File
 {
 private:
-	std::vector<char> _data;
+    std::vector<char> _data;
     std::fstream _reader;
     std::fstream _writer;
 public:
     std::string	Path;
     File(std::string &path)
-		:Path(path)
-	{
+        :Path(path)
+    {
 
-	}
-	~File()
-	{
+    }
+    ~File()
+    {
 
-	}
+    }
     bool FileExist()
     {
-        bool check=false;
+        bool check = false;
         _reader.open(Path, ReadAsBinary);
         check = _reader.is_open();
         return !check;
     }
-	bool Read()
-	{
+    bool Read()
+    {
         _reader.open(Path, ReadAsBinary);
-        char temp=' ';
-		if (_reader.is_open())
-		{
-			while (!_reader.eof())
-			{
-				_reader.get(temp);
-				if (_reader.eof()) break;
-				_data.push_back(temp);			
-			}
-			_reader.close();
-			return false;
-		}	
-		else
-			return true;
-	}
-	bool WriteData()
-	{
+        char temp = ' ';
+        if (_reader.is_open())
+        {
+            while (!_reader.eof())
+            {
+                _reader.get(temp);
+                if (_reader.eof()) break;
+                _data.push_back(temp);
+            }
+            _reader.close();
+            return false;
+        }
+        else
+            return true;
+    }
+    bool WriteData()
+    {
         _writer.open(Path, WriteAsBinary);
-		char temp=' ';
-		if (_writer.is_open())
-		{
-			for (unsigned int i = 0; i < _data.size(); i++)
-			{
-				temp = _data.at(i);
-				_writer << temp;
-			}
-			_writer.close();
-			return false;
-		}
-		else
-			return true;
-	}
-	void KeyGen(int psize)
-	{
-		srand(time(NULL));
-		for (int i = 0; i < psize; i++)
-		{
-			_data.push_back(0 + rand() % 255);
-		}
-	}
+        char temp = ' ';
+        if (_writer.is_open())
+        {
+            for (unsigned int i = 0; i < _data.size(); i++)
+            {
+                temp = _data.at(i);
+                _writer << temp;
+            }
+            _writer.close();
+            return false;
+        }
+        else
+            return true;
+    }
+    void KeyGen(int psize)
+    {
+        srand(time(NULL));
+        for (int i = 0; i < psize; i++)
+        {
+            _data.push_back(0 + rand() % 255);
+        }
+    }
     std::vector<char> &GetData() { return _data; }
     void encode(File &key, File &cfile)
     {
@@ -90,11 +90,11 @@ public:
         encode(key, pfile);
     }
 };
-std::string PathIsValid( std::string mode)
+std::string PathIsValid(std::string mode)
 {
     std::string path;
     bool check = true;
-    std::string Please ="Enter path to " + mode + " file \n";
+    std::string Please = "Enter path to " + mode + " file \n";
     while (check)
     {
         std::cout << Please;
@@ -103,7 +103,7 @@ std::string PathIsValid( std::string mode)
         check = checkfile.FileExist();
         if (check)
         {
-            std::cout << "No such file or directory:" <<path;
+            std::cout << "No such file or directory:" << path;
             std::cout << "\nPress any key to continue";
             _getch();
         }
@@ -113,7 +113,7 @@ std::string PathIsValid( std::string mode)
 }
 void main(int argc, char* argv[])
 {
-    bool check=true;
+    bool check = true;
     std::string path = "";
     std::string path2 = "";
     std::string path3 = "";
@@ -130,16 +130,16 @@ void main(int argc, char* argv[])
     pfile.Read();
     system("cls");
     std::cout << "Generating key...";
-	keyfile.KeyGen(pfile.GetData().size());
-	keyfile.WriteData();
-	keyfile.GetData().clear();
+    keyfile.KeyGen(pfile.GetData().size());
+    keyfile.WriteData();
+    keyfile.GetData().clear();
     keyfile.Read();
     system("cls");
     std::cout << "Encoding...";
-	pfile.encode(keyfile,cfile);
+    pfile.encode(keyfile, cfile);
     system("cls");
     std::cout << "Decoding...";
-	cfile.decode(keyfile, cfile2);
+    cfile.decode(keyfile, cfile2);
     system("cls");
     std::cout << "Done, press any key to exit";
     _getch();
