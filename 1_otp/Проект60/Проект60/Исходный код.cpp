@@ -2,38 +2,48 @@
 #include <vector>
 #include "iostream"
 #include <ctime>
-using namespace std;
+#include<string>
+#include <conio.h>
+#define ReadAsBinary  std::ios::in | std::ios::binary
+#define WriteAsBinary std::ios::binary | std::ios::out | std::ios::trunc
 
-class Files
+class File
 {
 private:
-	vector<char> _data;
-	fstream _read;
-	fstream _write;
+	std::vector<char> _data;
+    std::fstream _reader;
+    std::fstream _writer;
 public:
-	string	_path;
-	Files(string &path)
-		:_path(path)
+    std::string	Path;
+    File(std::string &path)
+		:Path(path)
 	{
 
 	}
-	~Files()
+	~File()
 	{
 
 	}
-	bool read()
+    bool FileExist()
+    {
+        bool check=false;
+        _reader.open(Path, ReadAsBinary);
+        check = _reader.is_open();
+        return !check;
+    }
+	bool Read()
 	{
-		_read.open(_path, ios::in  | ios::binary);//open as binary to read
-		if (_read.is_open())
+        _reader.open(Path, ReadAsBinary);
+        char temp=' ';
+		if (_reader.is_open())
 		{
-			char temp;
-			while (!_read.eof())
+			while (!_reader.eof())
 			{
-				_read.get(temp);
-				if (_read.eof()) break;
+				_reader.get(temp);
+				if (_reader.eof()) break;
 				_data.push_back(temp);			
 			}
-			_read.close();
+			_reader.close();
 			return false;
 		}	
 		else
@@ -41,22 +51,22 @@ public:
 	}
 	bool WriteData()
 	{
-		_write.open(_path, ios::binary | ios::out | ios::trunc);//open as binary to rewrite file
-		char temp;
-		if (_write.is_open())
+        _writer.open(Path, WriteAsBinary);
+		char temp=' ';
+		if (_writer.is_open())
 		{
 			for (unsigned int i = 0; i < _data.size(); i++)
 			{
 				temp = _data.at(i);
-				_write << temp;
+				_writer << temp;
 			}
-			_write.close();
+			_writer.close();
 			return false;
 		}
 		else
 			return true;
 	}
-	void KeyGen(int psize)// generate key
+	void KeyGen(int psize)
 	{
 		srand(time(NULL));
 		for (int i = 0; i < psize; i++)
@@ -64,62 +74,73 @@ public:
 			_data.push_back(0 + rand() % 255);
 		}
 	}
-	vector<char> &GetData() { return _data; }
+    std::vector<char> &GetData() { return _data; }
+    void encode(File &key, File &cfile)
+    {
+        if (cfile.Path == Path)
+        {
+            _data.clear();
+        }
+        for (unsigned int i = 0; i < _data.size(); i++)
+            cfile.GetData().push_back(_data.at(i) ^ key.GetData().at(i));
+        cfile.WriteData();
+    }
+    void decode(File &key, File &pfile)
+    {
+        encode(key, pfile);
+    }
 };
-void error(string &path)//error message
+std::string PathIsValid( std::string mode)
 {
-		cout << "no such file or directory:" <<path.c_str() << endl;
-		cin.get();
+    std::string path;
+    bool check = true;
+    std::string Please ="Enter path to " + mode + " file \n";
+    while (check)
+    {
+        std::cout << Please;
+        std::getline(std::cin, path);
+        File checkfile(path);
+        check = checkfile.FileExist();
+        if (check)
+        {
+            std::cout << "No such file or directory:" <<path;
+            std::cout << "\nPress any key to continue";
+            _getch();
+        }
+        system("cls");
+    }
+    return path;
 }
-void encode(Files &file, Files &key, Files &cfile)//encode file with key
+void main(int argc, char* argv[])
 {
-	cfile.GetData().clear();
-	for (unsigned int i = 0; i < file.GetData().size(); i++)
-		cfile.GetData().push_back(file.GetData().at(i) ^ key.GetData().at(i));
-	if (cfile.WriteData())
-	{
-		error(cfile._path);
-		cin.get();
-		return;
-	}
-}
-void decode(Files &cfile, Files &key, Files &pfile)
-{
-	return encode(cfile, key, pfile);
-}
-void main()
-{
-	string path = "c:/test/plain.docx";
-	string path2 = "c:/test/keykey.docx";
-	string path3 = "C:/test/ciphercipher.docx";
-	string path4 = "C:/test/plainplain.docx";
-	Files pfile(path)
-		, keyfile(path2)
-		, cfile(path3)
-		, cfile2(path4);
-	if (pfile.read())
-	{
-		error(pfile._path);
-		return;
-	}
+    bool check=true;
+    std::string path = "";
+    std::string path2 = "";
+    std::string path3 = "";
+    std::string path4 = "";
+    path = PathIsValid("plain");
+    path2 = PathIsValid("key");
+    path3 = PathIsValid("cipher");
+    path4 = PathIsValid("decrypted");
+    File pfile(path);
+    File keyfile(path2);
+    File cfile(path3);
+    File cfile2(path4);
+    std::cout << "Reading plain text...";
+    pfile.Read();
+    system("cls");
+    std::cout << "Generating key...";
 	keyfile.KeyGen(pfile.GetData().size());
 	keyfile.WriteData();
 	keyfile.GetData().clear();
-	if (keyfile.read())
-	{
-		error(keyfile._path);
-		return;
-	}
-	encode(pfile, keyfile,cfile);
-	decode(cfile, keyfile, cfile2);
-	//FILE * file;
-	// fopen_s(&file,path4.c_str(), "rb");
-	// if (file == NULL)
-	//	 cout << "whoopsie";
-	//vector<char> da(100);
-	//fread(da.data(), 1, 100, file);
-	//for each ( char i in da )
-	//{
-	//	cout << i;
-	//}
+    keyfile.Read();
+    system("cls");
+    std::cout << "Encoding...";
+	pfile.encode(keyfile,cfile);
+    system("cls");
+    std::cout << "Decoding...";
+	cfile.decode(keyfile, cfile2);
+    system("cls");
+    std::cout << "Done, press any key to exit";
+    _getch();
 }
