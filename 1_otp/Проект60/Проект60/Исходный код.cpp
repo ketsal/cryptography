@@ -33,15 +33,22 @@ public:
     }
     bool Read()
     {
+        bool eof = true;
         _reader.open(Path, ReadAsBinary);
         char temp = ' ';
         if (_reader.is_open())
         {
-            while (!_reader.eof())
+            while (eof)
             {
                 _reader.get(temp);
-                if (_reader.eof()) break;
-                _data.push_back(temp);
+                if (_reader.eof())
+                {
+                    eof = false;
+                };
+                if (eof)
+                {
+                    _data.push_back(temp);
+                }
             }
             _reader.close();
             return false;
