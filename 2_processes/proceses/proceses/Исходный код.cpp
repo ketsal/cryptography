@@ -71,8 +71,8 @@ public:
     VOID Refresh()
     {
         _OldSnapshot = _Snapshot;
+        _Snapshot.clear();
         GetProcessList();
-        //_SnapShot.clear();
         std::map  <DWORD, std::string> difference;
         std::set_symmetric_difference(_OldSnapshot.begin(), _OldSnapshot.end()
             , _Snapshot.begin(), _Snapshot.end()
