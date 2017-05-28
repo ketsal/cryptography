@@ -17,8 +17,6 @@ class DesProxy
 private:
     DES_cblock _key;
     DES_key_schedule _schedule;
-    DES_cblock _input;
-    DES_cblock _output;
     DES_cblock _key1;
     DES_cblock _key2;
     DES_cblock _key3;

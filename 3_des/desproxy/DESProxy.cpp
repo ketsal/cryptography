@@ -194,6 +194,8 @@ void DesProxy::encrypt_cfb_ofb_cbc(std::vector<unsigned char> &Data, int Mode, i
 }
 void DesProxy::encrypt_ecb(std::vector<unsigned char> &Data, int Mode,bool TripleCheck)
 {
+    DES_cblock input;
+    DES_cblock output;
     unsigned int Size = Data.size();
     unsigned int PseudoSize = (Data.size() + 7) / 8 * 8;
     unsigned int k = 0;
@@ -201,34 +203,34 @@ void DesProxy::encrypt_ecb(std::vector<unsigned char> &Data, int Mode,bool Tripl
     {
         if (i<Size)
         {
-            _input[k] = Data.at(i);
+            input[k] = Data.at(i);
         }
         else
         {
-            _input[k] = NULL;
+            input[k] = NULL;
         }
         k++;
         if (k == 8)
         {
             if (TripleCheck)
             {
-                DES_ecb3_encrypt(&_input, &_output, &_ks1, &_ks2, &_ks3, Mode);
+                DES_ecb3_encrypt(&input, &output, &_ks1, &_ks2, &_ks3, Mode);
             }
             else
             {
-                DES_ecb_encrypt(&_input, &_output, &_schedule, Mode);
+                DES_ecb_encrypt(&input, &output, &_schedule, Mode);
             }
             for (unsigned int j = 0; j < 8; j++)
             {
                 if (Mode)
                 {
-                    _EncData.push_back(_output[j]);
+                    _EncData.push_back(output[j]);
                 }
                 else
                 {
-                    _DecData.push_back(_output[j]);
+                    _DecData.push_back(output[j]);
                 }
-                _input[j] = NULL;
+                input[j] = NULL;
             }
             k = 0;
         }
