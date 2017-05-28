@@ -56,6 +56,5 @@ int main()
     decrypted.GetData() = crypter.GetDecData();
     decrypted.WriteData();
     system("cls");
-    std::cout << crypter.GetDecData().size();
     system("pause");
 }
