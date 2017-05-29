@@ -97,15 +97,11 @@ public:
         encode(key, pfile);
     }
 };
-std::string PathIsValid(std::string mode)
+bool PathIsValid(std::string mode, std::string path)
 {
-    std::string path;
     bool check = true;
-    std::string Please = "Enter path to " + mode + " file \n";
     while (check)
     {
-        std::cout << Please;
-        std::getline(std::cin, path);
         File checkfile(path);
         check = checkfile.FileExist();
         if (check)
@@ -116,19 +112,19 @@ std::string PathIsValid(std::string mode)
         }
         system("cls");
     }
-    return path;
+    return check;
 }
 void main(int argc, char* argv[])
 {
     bool check = true;
-    std::string path = "";
-    std::string path2 = "";
-    std::string path3 = "";
-    std::string path4 = "";
-    path = PathIsValid("plain");
-    path2 = PathIsValid("key");
-    path3 = PathIsValid("cipher");
-    path4 = PathIsValid("decrypted");
+    std::string path = "../../docs/plain.docx";
+    std::string path2 = "../../docs/keyforotp.docx";
+    std::string path3 = "../../docs/cipher.docx";
+    std::string path4 = "../../docs/decrypted.docx";
+    PathIsValid("plain",path);
+    PathIsValid("key",path2);
+    PathIsValid("cipher",path3);
+    PathIsValid("decrypted",path4);
     File pfile(path);
     File keyfile(path2);
     File cfile(path3);
@@ -142,10 +138,10 @@ void main(int argc, char* argv[])
     keyfile.GetData().clear();
     keyfile.Read();
     system("cls");
-    std::cout << "Encoding...";
+    std::cout << "Encrypting...";
     pfile.encode(keyfile, cfile);
     system("cls");
-    std::cout << "Decoding...";
+    std::cout << "Decrypting...";
     cfile.decode(keyfile, cfile2);
     system("cls");
     std::cout << "Done, press any key to exit";
