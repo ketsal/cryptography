@@ -151,9 +151,3 @@ Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-
-# Mac desktop service store files
-.DS_Store
-/3_laba/.vs/3_laba/v15/Browse.VC.db
-/3_laba/.vs
-.vs
