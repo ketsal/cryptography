@@ -27,12 +27,4 @@
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\lib\libeay32.lib">
-      <Filter>Файлы ресурсов</Filter>
-    </Library>
-    <Library Include="..\lib\ssleay32.lib">
-      <Filter>Файлы ресурсов</Filter>
-    </Library>
-  </ItemGroup>
 </Project>

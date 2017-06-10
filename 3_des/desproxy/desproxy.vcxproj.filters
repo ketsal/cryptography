@@ -15,10 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\lib\libeay32.lib" />
-    <Library Include="..\lib\ssleay32.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="DESProxy.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
