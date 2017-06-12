@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{51A365B4-0461-42B7-8AC5-4FB85CF4A7DE}</ProjectGuid>
-    <RootNamespace>My6_RSA</RootNamespace>
+    <ProjectGuid>{506019C0-A263-43FC-AAE1-DC9C711B3793}</ProjectGuid>
+    <RootNamespace>My9_HASHTABLE</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -47,7 +47,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>../include/lib/libeay32.lib;../include/lib/ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../include/lib/ssleay32.lib;../include/lib/libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -65,13 +65,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\include\file.cpp" />
-    <ClCompile Include="..\include\KeyGen.cpp" />
-    <ClCompile Include="RSAProxycpp.cpp" />
     <ClCompile Include="source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="RSAproxy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

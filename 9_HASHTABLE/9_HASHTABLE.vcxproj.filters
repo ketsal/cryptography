@@ -18,19 +18,5 @@
     <ClCompile Include="source.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\file.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\KeyGen.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAProxycpp.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="RSAproxy.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
