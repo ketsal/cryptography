@@ -1,0 +1,18 @@
+plain 32         4.08284              
+plain 16         3.97161
+plain 8          2.66378
+plain 16intersec 3.97364
+
+myhash 32         4.09009 
+myhash 16         3.70094
+myhash 8          2.56902
+myhash 16intersec 3.81983
+
+shahashed 32         4.0992
+shahashed 16         3.99596
+shahashed 8          2.66666
+shahashed 16intersec 3.99799
+
+plain zip 8          2.66601
+myhash zip 8         2.66621
+shahashed zip 8      2.66666

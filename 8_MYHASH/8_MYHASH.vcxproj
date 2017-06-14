@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{84B034D2-6837-439A-8C58-4C7A5514C62B}</ProjectGuid>
-    <RootNamespace>ENTROPY</RootNamespace>
+    <ProjectGuid>{6062D0B4-F544-4CE9-8288-9413E1C63663}</ProjectGuid>
+    <RootNamespace>My8_MYHASH</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -47,7 +47,6 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>../include/lib/ssleay32.lib;../include/lib/libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -65,11 +64,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\8_MYHASH\MYHash.cpp" />
     <ClCompile Include="..\include\file.cpp" />
-    <ClCompile Include="..\include\SHA256.cpp" />
-    <ClCompile Include="..\include\zip.cpp" />
-    <ClCompile Include="source.cpp" />
+    <ClCompile Include="MYHash.cpp" />
+    <ClCompile Include="sourc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MYHash.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

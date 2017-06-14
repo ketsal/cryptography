@@ -199,7 +199,7 @@ void FindFiles(std::string Path, HashTable &table)
 }
 int main()
 {
-    char path[MAX_PATH] = "C:\\program files";
+    char path[MAX_PATH] = "C:\\Windows\\System32";
     std::string path2= "C:\\stepan\\keke\\1039\\stepan.txt";
     HashTable table(MyHash,65536);
     FindFiles(path,table);
