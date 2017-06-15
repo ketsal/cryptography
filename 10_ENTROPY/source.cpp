@@ -221,7 +221,7 @@ void main()
     }
     if (file == 1)
     {
-        std::cout << "Reading plain text to hash";
+        std::cout << "Reading plain text";
         plain.Read();
         system("cls");
         std::cout << "Calculating entropy";
