@@ -13,6 +13,6 @@ shahashed 16         3.99596
 shahashed 8          2.66666
 shahashed 16intersec 3.99799
 
-plain zip 8          2.66601
-myhash zip 8         2.66621
-shahashed zip 8      2.66666
+plain zipratio        1.01213
+myhash zipratio       1.0391
+shahashed zipratio    1.00009

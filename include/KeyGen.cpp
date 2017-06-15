@@ -26,39 +26,7 @@ void KeyGen::GenerateRSAkeys(std::string PathToPublic, std::string PathToPrivate
     BIO_free(publicBIO);
     BIO_free(privateBIO);
 }
-unsigned char* KeyGen::GenerateTripleDesKey()
-{
-    srand(time(NULL));
-    unsigned char Key[168];
-    for (unsigned int i = 0; i<168; i++)
-        Key[i] = (0 + rand() % 255);
-    return Key;
-}
-unsigned char *KeyGen::GenerateDesKey()
-{
-    srand(time(NULL));
-    unsigned char Key[56];
-    for (unsigned int i = 0; i<56; i++)
-        Key[i] = (0 + rand() % 255);
-    return Key;
-}
-unsigned char *KeyGen::GenerateAesKey(int size)
-{
-    srand(time(NULL));
-    unsigned char *Key = new unsigned char[size];
-    for (unsigned int i = 0; i<size; i++)
-        Key[i] = (0 + rand() % 255);
-    return Key;
-}
 unsigned char *KeyGen::RC4(int size)
-{
-    srand(time(NULL));
-    unsigned char *Key = new unsigned char[size];
-    for (unsigned int i = 0; i<size; i++)
-        Key[i] = (0 + rand() % 255);
-    return Key;
-}
-unsigned char *KeyGen::Otp(int size)
 {
     srand(time(NULL));
     unsigned char *Key = new unsigned char[size];

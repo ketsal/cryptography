@@ -175,6 +175,7 @@ void main()
     std::string path3 = "../docs/myhash.docx";
     std::string path4 = "../docs/zippedfile.zip";
     File plain(path);
+    double zipratio = 0;
     File shahashed(path2);
     File myhash(path3);
     File zip(path4);
@@ -199,6 +200,10 @@ void main()
         system("cls");
     }
     cont = true;
+    if (file == 4)
+    {
+        cont = false;
+    }
     while (cont)
     {
         std::cout << "Choose alphabet";
@@ -257,6 +262,7 @@ void main()
     }
     if (file == 4)
     {
+       
         while (cont)
         {
             std::cout << "What file to zip? 1 for plain,2 for my hash,3 for SHA\n";
@@ -272,7 +278,7 @@ void main()
             system("cls");
         }
         if (file == 1)
-        {
+        {        
             std::cout << "Reading plain text ";
             plain.Read();
             system("cls");
@@ -281,8 +287,7 @@ void main()
             system("cls");
             std::cout << "Reading zip file";
             zip.Read();
-            system("cls");
-            std::cout << "Calculating entropy";
+            zipratio = plain.GetData().size()*1.0 / zip.GetData().size();
         }
         if (file == 2)
         {
@@ -296,8 +301,7 @@ void main()
             system("cls");
             std::cout << "Reading zip file";
             zip.Read();
-            system("cls");
-            std::cout << "Calculating entropy";
+            zipratio = myhash.GetData().size()*1.0 / zip.GetData().size();
         }
         if (file == 3)
         {
@@ -311,18 +315,17 @@ void main()
             system("cls");
             std::cout << "Reading zip file";
             zip.Read();
-            system("cls");
-            std::cout << "Calculating entropy";
-        }
-        switch (alphabet)
-        {
-        case 1:entropy = CalculateEntropy8Base(zip); break;
-        case 2:entropy = CalculateEntropy16Base(zip); break;
-        case 3:entropy = CalculateEntropy32Base(zip); break;
-        case 4:entropy = CalculateWithIntersection(zip); break;
+            zipratio = shahashed.GetData().size()*1.0 / zip.GetData().size();
         }
     }
     system("cls");
-    std::cout << "Entropy="<<-entropy<<"\n";
+    if (zipratio != 0)
+    {
+        std::cout << "Zip ratio=" << zipratio << "\n";
+    }
+    else
+    {
+        std::cout << "Entropy=" << -entropy << "\n";
+    }
     system("Pause");
 }
