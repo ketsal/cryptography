@@ -1,4 +1,3 @@
-#define __STDC_WANT_LIB_EXT1__ 1
 #define  _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <Windows.h>
@@ -8,6 +7,8 @@
 #include <string>
 #include <time.h>
 #include <Strsafe.h>
+#include <sstream>
+#include "../include/file.h"
 #define SHA true
 #define MyHash false
 class FileInformation
@@ -55,18 +56,32 @@ class HashTable
 {
 private:
     FileInformation *_table[65536];
-    int alpha=1;
     bool _hashfunc;
-    int _size;
-    int hashbysha(char *Key)
+    std::string to_hex(unsigned char s) 
     {
-        int size = sizeof(Key);
+        std::stringstream ss;
+        ss << std::hex << (int)s;
+        return ss.str();
+    }
+    int hashbysha(std::string Key)
+    {
+        std::string::size_type sz;
+        unsigned int HASH=0;
         unsigned char digest[SHA256_DIGEST_LENGTH];
         SHA256_CTX ctx;
         SHA256_Init(&ctx);
-        SHA256_Update(&ctx, Key, size);
+        SHA256_Update(&ctx, &Key, Key.size());
         SHA256_Final(digest, &ctx);
-        return digest[15];
+        std::string output = "";
+        for (int i = 0; i < 32; i++) 
+        {
+            output += to_hex(digest[i]);
+        }
+        for (int i = 0; i<output.size(); i++)
+        {
+            HASH += output[i];
+        }
+        return HASH;
     }
    int hashbymyhash(std::string Key)
     {
@@ -80,35 +95,53 @@ private:
         return HASH;
     }
 public:
-    HashTable(bool Hashfunc, int size)
+    HashTable()
     {
-        this->_hashfunc = Hashfunc;
-        this->_size = size;
-        for (int i = 0; i < _size; i++)
+        for (unsigned int i = 0; i < 65536; i++)
         {
             _table[i] = NULL;
         }
     }
-    int GetAlpha()
+    float GetAlphaAv()
     {
-        return alpha;
+        float alphaav=0;
+        int rowcounter=0;
+        int elementscount = 0;
+        FileInformation *temp = NULL;
+        for (unsigned int i = 0; i < 65536; i++)
+        {
+            temp = _table[i];
+            if (temp != NULL)
+            {
+                rowcounter++;
+                while (temp!= NULL)
+                {
+                    elementscount++;
+                    temp = temp->GetNext();
+                }
+            }
+        }
+        std::cout << rowcounter << " " << elementscount << "\n";
+        alphaav = elementscount*1.0 / rowcounter;
+        return alphaav;
     }
-    void PushElem(WIN32_FIND_DATAA &Fileinfo, std::string Fullpath)
+    void PushElem(WIN32_FIND_DATAA &Fileinfo, std::string Fullpath, bool Hashfunc)
     {
-        char * path = new char[Fullpath.length() + 1];
+        _hashfunc = Hashfunc;
+        char * path = new char[Fullpath.length()+1];
         std::strcpy(path, Fullpath.c_str());
-        int hash = 0;
+        unsigned int  hash = 0;
         if (_hashfunc)
         {
-            hash=hashbysha(path);
+            hash = hashbysha(path);
+            hash = hash % 65536;
         }   
         else
         {
-            hash = hashbymyhash(path)%65536;
+            hash = hashbymyhash(path) % 65536;
         }
         FileInformation *file = new FileInformation(Fileinfo, Fullpath);
         FileInformation *place = _table[hash];
-        int counter = 1;
         if (place == NULL)
         {
             _table[hash] = file;
@@ -117,20 +150,89 @@ public:
         while (place->GetNext() != NULL)
         {
             place = place->GetNext();
-            counter++;
-        }
-        if (counter > alpha)
-        {
-            alpha = counter;
         }
         place->SetNext(file);
+    }
+    void Rebuild(bool Hashfunc)
+    {
+        FileInformation *temp = NULL;
+        std::vector<std::string> names;
+        int hash = 0;
+        bool checkloop = true;
+        for (unsigned int i = 0; i < 65536; i++)
+        {
+            temp = _table[i];
+            if (temp != NULL)
+            {
+                names.clear();
+                names.push_back(temp->GetKey());
+                _table[i] = temp->GetNext();
+                checkloop = true;
+                while ((temp!= NULL) && checkloop)
+                {
+                    PushElem(temp->GetFileInfo(), temp->GetKey(), Hashfunc);
+                    temp = _table[i];      
+                    if (temp != NULL)
+                    {                      
+                        for (unsigned int j = 0; j < names.size(); j++)
+                        {
+                            if (temp->GetKey() == names.at(j))
+                            {
+                                checkloop = false;
+                            }
+                        }
+                        if (checkloop)
+                        {
+                            _table[i] = temp->GetNext();
+                        }
+                        names.push_back(temp->GetKey());
+                    }
+                }
+            }
+        }
+    }
+    void PrintInFile(std::vector<unsigned char> &data)
+    {
+        FileInformation *temp = NULL;
+        for (unsigned int i = 0; i < 65536; i++)
+        {
+            if (_table[i] != NULL)
+            {
+                std::string number = std::to_string(i);
+                temp = _table[i];
+                for (int j = 0; j < number.size(); j++)
+                {
+                    data.push_back(number[j]);
+                }
+                data.push_back(' ');
+                while (temp != NULL)
+                {
+                    for (unsigned int j = 0; j < temp->GetKey().size(); j++)
+                    {
+                        data.push_back(temp->GetKey()[j]);
+                    }
+                    data.push_back('-');
+                    data.push_back('>');
+                    temp = temp->GetNext();
+                }
+                data.push_back(0x0A);
+            }
+        }
     }
     void printFind(std::string Fullpath)
     {
         bool cont = true;
-        char * path = new char[Fullpath.length() + 1];
+        char * path = new char[Fullpath.length()+1];
         std::strcpy(path, Fullpath.c_str());
-        int hash = hashbysha(path);
+        int hash = 255;
+        if (_hashfunc)
+        {
+            hash = hashbysha(path) % 65536;
+        }
+        else
+        {
+            hash = hashbymyhash(path)%65536;
+        }
         FileInformation *find = _table[hash];
         if (!find)
         {
@@ -149,23 +251,13 @@ public:
                 find = find->GetNext();
             }
         }
-        printf("File name:%s\nFile alternative name:%s\nFile atribute:%u\nFile size(high):%u\nFile size low:%u\n",
-            &find->GetFileInfo().cFileName[0]
-            , &find->GetFileInfo().cAlternateFileName[0]
-            , find->GetFileInfo().dwFileAttributes
-            , find->GetFileInfo().nFileSizeHigh
-            , find->GetFileInfo().nFileSizeLow
-            );
     }
 };
-void FindFiles(std::string Path, HashTable &table)
+void FindFiles(std::string Path, HashTable &table,bool Hashfunc)
 {
     WIN32_FIND_DATAA wfd;
-    char * path = new char[Path.length() + 1];
-    std::strcpy(path, Path.c_str());
-    path = strcat(path, "\\*");
-    HANDLE const hFind = FindFirstFileA(path, &wfd);
-    path[strlen(path) - strlen(strstr(path, "*"))] = '\0';
+    std::string path = Path + "\\*";
+    HANDLE const hFind = FindFirstFileA(path.c_str(), &wfd);
     bool checkdots=true;
     if (INVALID_HANDLE_VALUE != hFind)
     {
@@ -180,17 +272,14 @@ void FindFiles(std::string Path, HashTable &table)
             {
                 if (checkdots)
                 {
-                    strcat(path, &wfd.cFileName[0]);
-                    FindFiles(path,table);
-                    path[strlen(path) - strlen(&wfd.cFileName[0])] = '\0';
+                    path = Path + "\\" + std::string(&wfd.cFileName[0]);
+                    FindFiles(path, table, Hashfunc);
                 }
             }
             else
             {
-                strcat(path, &wfd.cFileName[0]);
-                std::cout << &wfd.cFileName[0] <<" "<<table.GetAlpha()<<std::endl;
-                table.PushElem(wfd, path);
-                path[strlen(path) - strlen(&wfd.cFileName[0])] = '\0';
+                path = Path + "\\" + std::string(&wfd.cFileName[0]);
+                table.PushElem(wfd, path,Hashfunc);
             }
         } while (FindNextFileA(hFind, &wfd));
 
@@ -199,12 +288,30 @@ void FindFiles(std::string Path, HashTable &table)
 }
 int main()
 {
-    char path[MAX_PATH] = "C:\\Windows\\System32";
+    char path[MAX_PATH] = "C:\\windows\\system32";
     std::string path2= "C:\\stepan\\keke\\1039\\stepan.txt";
-    HashTable table(MyHash,65536);
-    FindFiles(path,table);
-    table.printFind(path2);
-    std::cout << table.GetAlpha();
+    std::string path1 = "../docs/table.txt";
+    HashTable table;
+    File file(path1);
+    FindFiles(path, table, MyHash);
+    printf("%.3f ", table.GetAlphaAv());
+    table.PrintInFile(file.GetData());
+    file.WriteData();
+   
+   /* table.Rebuild(SHA);
+    std::cout << "\n";
+    printf("%.3f ", table.GetAlphaAv());
+    std::cout << "\n";
+    HashTable table2;
+    FindFiles(path, table2, SHA);
+    printf("%.3f ", table2.GetAlphaAv());*/
     system("pause");
     return 0;
 }
+//printf("File name:%s\nFile alternative name:%s\nFile atribute:%u\nFile size(high):%u\nFile size low:%u\n",
+//    &find->GetFileInfo().cFileName[0]
+//    , &find->GetFileInfo().cAlternateFileName[0]
+//    , find->GetFileInfo().dwFileAttributes
+//    , find->GetFileInfo().nFileSizeHigh
+//    , find->GetFileInfo().nFileSizeLow
+//    );
