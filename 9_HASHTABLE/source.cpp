@@ -1,14 +1,15 @@
 #define  _CRT_SECURE_NO_WARNINGS
+#include "../shared/mpirxx.h"
 #include <iostream>
 #include <Windows.h>
 #include <vector>
 #include <map>
-#include "../include/openssl/sha.h"
+#include "../shared/openssl/sha.h"
 #include <string>
 #include <time.h>
 #include <Strsafe.h>
 #include <sstream>
-#include "../include/file.h"
+#include "../shared/file.h"
 #define SHA true
 #define MyHash false
 class FileInformation
@@ -65,7 +66,6 @@ private:
     }
     int hashbysha(std::string Key)
     {
-        std::string::size_type sz;
         unsigned int HASH=0;
         unsigned char digest[SHA256_DIGEST_LENGTH];
         SHA256_CTX ctx;
@@ -73,14 +73,23 @@ private:
         SHA256_Update(&ctx, &Key, Key.size());
         SHA256_Final(digest, &ctx);
         std::string output = "";
+        char tonumber[65];
         for (int i = 0; i < 32; i++) 
         {
             output += to_hex(digest[i]);
         }
-        for (int i = 0; i<output.size(); i++)
+        for (int i = 0; i < output.size(); i++)
         {
-            HASH += output[i];
+            tonumber [i]=output[i];
         }
+        tonumber[output.size()] = '\0';
+        mpz_t a;
+        mpz_init(a);
+        mpz_t b;
+        mpz_init(b);
+        mpz_init_set_str(a, tonumber, 16);
+        mpz_mod_ui(b, a, 65536);
+        HASH=mpz_get_ui(b);
         return HASH;
     }
    int hashbymyhash(std::string Key)
@@ -121,7 +130,6 @@ public:
                 }
             }
         }
-        std::cout << rowcounter << " " << elementscount << "\n";
         alphaav = elementscount*1.0 / rowcounter;
         return alphaav;
     }
@@ -286,32 +294,88 @@ void FindFiles(std::string Path, HashTable &table,bool Hashfunc)
         FindClose(hFind);
     }
 }
+bool ChooseFunc()
+{
+    bool HashFunc = false;
+    int Func = 0;
+    while (Func > 2 || Func < 1)
+    {
+        std::cout << "Choose hash func. 1 for MyHash, 2 for SHA\n";
+        std::cin >> Func;
+        system("cls");
+    }
+    if (Func == 1)
+    {
+        HashFunc = MyHash;
+    }
+    else
+    {
+        HashFunc = SHA;
+    }
+    return HashFunc;
+}
 int main()
 {
-    char path[MAX_PATH] = "C:\\windows\\system32";
+    std::string path = "C:\\windows\\system32";
     std::string path2= "C:\\stepan\\keke\\1039\\stepan.txt";
     std::string path1 = "../docs/table.txt";
     HashTable table;
     File file(path1);
-    FindFiles(path, table, MyHash);
-    printf("%.3f ", table.GetAlphaAv());
+    unsigned int start=0;
+    unsigned int end=0;
+    double buildtime=0;
+    double rebuildtime = 0;
+    double AlphaMax = 1.8;
+    bool HashFunc = false;
+    int Func=0;
+    double av=0;
+    HashFunc=ChooseFunc();
+    system("cls");
+    std::cout << "Building a table\n";
+    start = clock();
+    FindFiles(path, table, HashFunc);
+    end = clock();
+    system("cls");
+    buildtime = (end - start)*1.0/1000;
+    av = table.GetAlphaAv();
+    bool cont=true;
+    if (av > AlphaMax)
+    {
+        std::cout << "Alpha average too big\n";
+        while (cont)
+        {
+            bool temp = ChooseFunc();
+            if (HashFunc == temp)
+            {
+                std::cout << "Func was used before choose other\n";
+            }
+            else
+            {
+                HashFunc = temp;
+                cont = false;
+            }
+        }
+       
+    }
+    system("cls");
+    if (!cont)
+    {
+        std::cout << "Rebuilding table\n";
+        start = clock();
+        table.Rebuild(HashFunc);
+        end = clock();
+        rebuildtime = (end - start)*1.0/1000;
+    }
+    system("cls");
+    std::cout << "Writing table into file\n";
     table.PrintInFile(file.GetData());
     file.WriteData();
-   
-   /* table.Rebuild(SHA);
-    std::cout << "\n";
-    printf("%.3f ", table.GetAlphaAv());
-    std::cout << "\n";
-    HashTable table2;
-    FindFiles(path, table2, SHA);
-    printf("%.3f ", table2.GetAlphaAv());*/
+    system("cls");
+    printf("%Build time %.3f\n", buildtime);
+    if (!cont)
+    {
+        printf("%Rebuild time %.3f\n", rebuildtime);
+    }
     system("pause");
     return 0;
 }
-//printf("File name:%s\nFile alternative name:%s\nFile atribute:%u\nFile size(high):%u\nFile size low:%u\n",
-//    &find->GetFileInfo().cFileName[0]
-//    , &find->GetFileInfo().cAlternateFileName[0]
-//    , find->GetFileInfo().dwFileAttributes
-//    , find->GetFileInfo().nFileSizeHigh
-//    , find->GetFileInfo().nFileSizeLow
-//    );

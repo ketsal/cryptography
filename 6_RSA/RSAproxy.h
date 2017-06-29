@@ -1,13 +1,13 @@
-#include <openssl/pem.h>
-#include <openssl/ssl.h>
-#include <openssl/rsa.h>
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
+#include  "../shared/openssl/pem.h"
+#include  "../shared/openssl/ssl.h"
+#include  "../shared/openssl/rsa.h"
+#include "../shared/openssl/evp.h"
+#include  "../shared/openssl/bio.h"
+#include  "../shared/openssl/err.h"
 #include <stdio.h>
 #include <string>
-#include "../include/file.h"
-#include "../include/KeyGen.h"
+#include "../shared/file.h"
+#include "../shared/KeyGen.h"
 class RSAproxy
 {
 private:

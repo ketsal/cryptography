@@ -1,5 +1,5 @@
 #include "MYHash.h"
-#include "../include/file.h"
+#include "../shared/file.h"
 void HashFiles(File &Input, File &MyOutput, std::vector<unsigned char>  IV)
 {
     MyHash Hasher;

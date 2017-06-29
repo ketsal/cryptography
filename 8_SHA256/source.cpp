@@ -1,9 +1,9 @@
-#include "../include/openssl/sha.h"
-#include "../include/file.h"
+#include "../shared/openssl/sha.h"
+#include "../shared/file.h"
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "../include/SHA256.h"
+#include "../shared/SHA256.h"
 void HashFiles(File &Input, File &ShaOutput)
 {
     SHA256Proxy Hasher;

@@ -1,15 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <string>
 #include <iostream>
-#include "../include/file.h"
+#include "../shared/file.h"
 #include <math.h>
 #include <map>
 #include <random>
 #include <ctime>
 #include "../8_MYHASH/MYHash.h"
-#include "../include/SHA256.h"
-#include "../include/openssl/sha.h"
-#include "../include/zip.h"
+#include "../shared/SHA256.h"
+#include "../shared//openssl/sha.h"
+#include "../shared/zip.h"
 
 #define SHA 1
 #define MYHASHFUNC 2

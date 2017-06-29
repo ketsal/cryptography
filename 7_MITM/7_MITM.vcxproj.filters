@@ -15,13 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Исходный код.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\DESProxy.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\file.cpp">
+    <ClCompile Include="source.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
