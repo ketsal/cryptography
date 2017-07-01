@@ -1,4 +1,3 @@
-#define  _CRT_SECURE_NO_WARNINGS
 #include "../shared/mpirxx.h"
 #include <iostream>
 #include <Windows.h>
@@ -47,8 +46,8 @@ public:
     FileInformation *GetNext()
     {
         return this->_next;
-    }  
-    void SetNext(FileInformation *next) 
+    }
+    void SetNext(FileInformation *next)
     {
         this->_next = next;
     }
@@ -136,17 +135,15 @@ public:
     void PushElem(WIN32_FIND_DATAA &Fileinfo, std::string Fullpath, bool Hashfunc)
     {
         _hashfunc = Hashfunc;
-        char * path = new char[Fullpath.length()+1];
-        std::strcpy(path, Fullpath.c_str());
         unsigned int  hash = 0;
         if (_hashfunc)
         {
-            hash = hashbysha(path);
+            hash = hashbysha(Fullpath);
             hash = hash % 65536;
         }   
         else
         {
-            hash = hashbymyhash(path) % 65536;
+            hash = hashbymyhash(Fullpath) % 65536;
         }
         FileInformation *file = new FileInformation(Fileinfo, Fullpath);
         FileInformation *place = _table[hash];
@@ -230,16 +227,14 @@ public:
     void printFind(std::string Fullpath)
     {
         bool cont = true;
-        char * path = new char[Fullpath.length()+1];
-        std::strcpy(path, Fullpath.c_str());
         int hash = 255;
         if (_hashfunc)
         {
-            hash = hashbysha(path) % 65536;
+            hash = hashbysha(Fullpath) % 65536;
         }
         else
         {
-            hash = hashbymyhash(path)%65536;
+            hash = hashbymyhash(Fullpath) % 65536;
         }
         FileInformation *find = _table[hash];
         if (!find)

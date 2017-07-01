@@ -10,6 +10,9 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\11_Diffie-Hellman\source.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{62F514EE-25B8-48E0-A400-0937CAB9ECAA}</ProjectGuid>
     <RootNamespace>My11_DiffieHellman_Bob</RootNamespace>
@@ -78,9 +81,6 @@
       <AdditionalDependencies>MyLib.lib;mpir.lib;mpirxx.lib;Ws2_32.lib;ssleay32.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="source.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -113,6 +113,7 @@ int main()
     }
 	if(checkmode)
 	{
+        std::cout << "Waiting for connection...\n";
 		if (listen(listen_socket, SOMAXCONN) == SOCKET_ERROR) 
 		{
 			closesocket(listen_socket);
@@ -124,7 +125,10 @@ int main()
 			closesocket(listen_socket);
 			WSACleanup();
 		}
+        std::cout << "Connected\n";
+        system("cls");
 	}
+    std::cout << "Starting diffie-hellman exchange\n";
 	if(checkmode)
 	{
 		sock.ExchangeAsServer(client_socket);
@@ -133,6 +137,8 @@ int main()
 	{
 		sock.ExchangeAsClient(listen_socket);
 	}
+    std::cout << "Done";
+    system("cls");
 	buf = sock.GetResult();
     for (int i = 0; i < 7; i++)
     {
@@ -144,26 +150,37 @@ int main()
 	{
         message.clear();
 		result = recv(client_socket, buf, 1024, 0);
+        std::cout << "Recieved message\n";
 		for (int i = 0; i < result; i++)
 		{
+            std::cout << buf[i];
 			message.push_back(buf[i]);
 		}
 		crypter.DecryptCFB(message, KEYbytes);
-		for (int i = 0; i < crypter.GetDecData().size(); i++)
+        std::cout << "\nDecrypted message\n";
+        for (int i = 0; i < crypter.GetDecData().size(); i++)
 		{
 			std::cout << crypter.GetDecData().at(i);
 		}
 	}
-	else
-	{
-		crypter.EncryptCFB(message, KEYbytes);
-		char *buffer = new char[crypter.GetEncData().size()];
-		for (int i = 0; i < crypter.GetEncData().size(); i++)
-		{
-				buffer[i] =(char)crypter.GetEncData().at(i);
-		}
-		result = send(listen_socket, buffer, crypter.GetEncData().size(), 0);
-	}
+    else
+    {
+        std::cout << "Encrypting message\n";
+        crypter.EncryptCFB(message, KEYbytes);
+        char *buffer = new char[crypter.GetEncData().size()];
+        for (int i = 0; i < crypter.GetEncData().size(); i++)
+        {
+            buffer[i] = crypter.GetEncData().at(i);
+        }
+        std::cout << "Sending off message\n";
+        result = send(listen_socket, buffer, crypter.GetEncData().size(), 0);
+        system("cls");
+        std::cout << "Message sent\n";
+        for (int i = 0; i < result; i++)
+        {
+            std::cout << buffer[i];
+        }
+    }
     int A;
     std::cin >> A;
 }
