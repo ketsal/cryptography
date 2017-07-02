@@ -12,7 +12,6 @@
 [Rr]elease/
 x64/
 build/
-[Bb]in/
 [Oo]bj/
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
@@ -70,7 +69,7 @@ _TeamCity*
 
 # DotCover is a Code Coverage Tool
 *.dotCover
-
+*.sdf
 # NCrunch
 *.ncrunch*
 .*crunch*.local.xml
