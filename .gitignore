@@ -45,7 +45,7 @@ build/
 *.pidb
 *.log
 *.scc
-
+*.sdf
 # Visual C++ cache files
 ipch/
 *.aps
@@ -70,7 +70,7 @@ _TeamCity*
 
 # DotCover is a Code Coverage Tool
 *.dotCover
-*.sdf
+
 # NCrunch
 *.ncrunch*
 .*crunch*.local.xml
