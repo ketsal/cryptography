@@ -33,7 +33,7 @@ public:
     }
     void ExchangeAsServer(SOCKET ClientSock)
     {
-        mpz_urandomb(P, state, 3000);
+        mpz_urandomb(P, state, 10);
         mpz_urandomb(a, state, 1000);
         int result = 0;
         result = recv(ClientSock, buf, buffer_size, 0);
@@ -49,7 +49,7 @@ public:
     }
     void ExchangeAsClient(SOCKET ServerSock)
     {
-        mpz_urandomb(N, state, 10);
+        mpz_urandomb(N, state, 3000);
         mpz_urandomb(b, state, 1000);
         int result = 0;
         mpz_get_str(buf, 16, N);
