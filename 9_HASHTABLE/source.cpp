@@ -2,10 +2,8 @@
 #include <iostream>
 #include <Windows.h>
 #include <vector>
-#include <map>
 #include "../shared/openssl/sha.h"
 #include <string>
-#include <time.h>
 #include <Strsafe.h>
 #include <sstream>
 #include "../shared/file.h"
@@ -55,7 +53,8 @@ public:
 class HashTable
 {
 private:
-    FileInformation *_table[65536];
+    static const int TableLenght = 65535;
+    FileInformation *_table[TableLenght];
     bool _hashfunc;
     std::string to_hex(unsigned char s) 
     {
@@ -87,7 +86,7 @@ private:
         mpz_t b;
         mpz_init(b);
         mpz_init_set_str(a, tonumber, 16);
-        mpz_mod_ui(b, a, 65536);
+        mpz_mod_ui(b, a, TableLenght);
         HASH=mpz_get_ui(b);
         return HASH;
     }
@@ -100,12 +99,12 @@ private:
             HASH += (Key[i] % (i + 1));
             HASH ^= (Key[i] >> 5);
         }
-        return HASH;
+        return HASH%TableLenght;
     }
 public:
     HashTable()
     {
-        for (unsigned int i = 0; i < 65536; i++)
+        for (unsigned int i = 0; i <TableLenght; i++)
         {
             _table[i] = NULL;
         }
@@ -116,7 +115,7 @@ public:
         int rowcounter=0;
         int elementscount = 0;
         FileInformation *temp = NULL;
-        for (unsigned int i = 0; i < 65536; i++)
+        for (unsigned int i = 0; i <TableLenght; i++)
         {
             temp = _table[i];
             if (temp != NULL)
@@ -139,11 +138,10 @@ public:
         if (_hashfunc)
         {
             hash = hashbysha(Fullpath);
-            hash = hash % 65536;
         }   
         else
         {
-            hash = hashbymyhash(Fullpath) % 65536;
+            hash = hashbymyhash(Fullpath);
         }
         FileInformation *file = new FileInformation(Fileinfo, Fullpath);
         FileInformation *place = _table[hash];
@@ -164,7 +162,7 @@ public:
         std::vector<std::string> names;
         int hash = 0;
         bool checkloop = true;
-        for (unsigned int i = 0; i < 65536; i++)
+        for (unsigned int i = 0; i < TableLenght; i++)
         {
             temp = _table[i];
             if (temp != NULL)
@@ -199,7 +197,7 @@ public:
     void PrintInFile(std::vector<unsigned char> &data)
     {
         FileInformation *temp = NULL;
-        for (unsigned int i = 0; i < 65536; i++)
+        for (unsigned int i = 0; i < TableLenght; i++)
         {
             if (_table[i] != NULL)
             {
@@ -227,14 +225,14 @@ public:
     void printFind(std::string Fullpath)
     {
         bool cont = true;
-        int hash = 255;
+        int hash = 0;
         if (_hashfunc)
         {
-            hash = hashbysha(Fullpath) % 65536;
+            hash = hashbysha(Fullpath);
         }
         else
         {
-            hash = hashbymyhash(Fullpath) % 65536;
+            hash = hashbymyhash(Fullpath);
         }
         FileInformation *find = _table[hash];
         if (!find)

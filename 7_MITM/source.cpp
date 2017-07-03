@@ -11,8 +11,8 @@
 #include <mutex>
 std::mutex locker;
 void ResultOfEncryption(
-     std::map <std::vector<unsigned char>
-    ,std::string > &MAP, unsigned char **KEYS
+     std::map <std::vector<unsigned char>,std::string > &MAP
+    ,unsigned char **KEYS
     ,std::vector<unsigned char> data
     ,int start
     ,int end
@@ -121,6 +121,8 @@ bool FindPairs(
 void main()
 {
     DesProxy DoubleDES;
+    std::string KEY1 = "1234567";
+    std::string KEY2 = "1234567";
     std::string path = "../docs/plainforDDES.txt";
     std::string path2 = "../docs/cipherforDDES.txt";
     File plain(path);
@@ -132,11 +134,12 @@ void main()
     int KeyNumber = rand() % numberofkeys + 0;
     unsigned char **KEYS = new  unsigned char*[numberofkeys];
     for (int count = 0; count < numberofkeys; count++)
+    {
         KEYS[count] = new unsigned char[14];
+    }
     plain.Read();
     CreateKeys(KEYS, numberofkeys);
-    std::string KEY1 = "1234567";
-    std::string KEY2 = "1234567";;
+
     for (int i = 0; i < 7; i++)
     {
         KEY1[i] = KEYS[KeyNumber][i];
@@ -159,13 +162,13 @@ void main()
     DoubleDES.GetEncData().clear();
     temp.clear();
     std::map <  std::vector<unsigned char>, std::string > ENCMAP1;
-    std::map <  std::vector<unsigned char>, std::string  > DECMAP1;
+    std::map <  std::vector<unsigned char>, std::string > DECMAP1;
     std::map <  std::vector<unsigned char>, std::string > ENCMAP2;
-    std::map <  std::vector<unsigned char>, std::string  > DECMAP2;
+    std::map <  std::vector<unsigned char>, std::string > DECMAP2;
     std::map <  std::vector<unsigned char>, std::string > ENCMAP3;
-    std::map <  std::vector<unsigned char>, std::string  > DECMAP3;
+    std::map <  std::vector<unsigned char>, std::string > DECMAP3;
     std::map <  std::vector<unsigned char>, std::string > ENCMAP4;
-    std::map <  std::vector<unsigned char>, std::string  > DECMAP4;
+    std::map <  std::vector<unsigned char>, std::string > DECMAP4;
     std::thread Thread1(ResultOfEncryption, std::ref(ENCMAP1), KEYS, plain.GetData(), 0, 16384, 1);
     std::thread Thread2(ResultOfEncryption, std::ref(ENCMAP2), KEYS, plain.GetData(), 16384, 32768, 1);
     std::thread Thread3(ResultOfEncryption, std::ref(ENCMAP3), KEYS, plain.GetData(), 32768, 49152, 1);
@@ -200,37 +203,37 @@ void main()
     {
         found = FindPairs(ENCMAP4, DECMAP1, DECMAP2, DECMAP3, DECMAP4, Data, Key);
     }
-    int a = 0;
+    int Decmapnumber = 0;
     cont = true;
     if ((DECMAP1.count(Data) > 0)&&cont)
     {
-        a = 1;
+        Decmapnumber = 1;
         cont = false;
     }
     if ((DECMAP2.count(Data) > 0) && cont)
     {
-        a = 2;
+        Decmapnumber = 2;
         cont = false;
     }
     if ((DECMAP3.count(Data) >0) && cont)
     {
-        a = 3;
+        Decmapnumber = 3;
         cont = false;
     }
     if ((DECMAP4.count(Data) > 0) && cont)
     {
-        a = 4;
+        Decmapnumber = 4;
         cont = false;
     }
     for (int j = 0; j < 7; j++)
     {
-        if(a==1)
+        if (Decmapnumber == 1)
             Key.push_back(DECMAP1.at(Data)[j]);
-        if (a == 2)
+        if (Decmapnumber == 2)
             Key.push_back(DECMAP2.at(Data)[j]);
-        if (a == 3)
+        if (Decmapnumber == 3)
             Key.push_back(DECMAP3.at(Data)[j]);
-        if (a == 4)
+        if (Decmapnumber == 4)
             Key.push_back(DECMAP4.at(Data)[j]);
     }
     system("cls");
@@ -245,5 +248,5 @@ void main()
         printf("%X", KEYS[KeyNumber][j]);
     }
     printf("\n");
-    system("pause");
+    std::cin >> numberofkeys;
 }

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#include <sstream>
 #include <time.h>
 #include "../shared//DESProxy.h"
 class DiffieHellman
@@ -39,12 +38,12 @@ public:
         result = recv(ClientSock, buf, buffer_size, 0);
         mpz_init_set_str(N, buf, 16);
         mpz_get_str(buf, 16, P);
-        result = send(ClientSock, buf, 1024, 0);
+        result = send(ClientSock, buf, buffer_size, 0);
         mpz_powm(A, P, a, N);
         result = recv(ClientSock, buf, buffer_size, 0);
         mpz_init_set_str(B, buf, 16);
         mpz_get_str(buf, 16, A);
-        result = send(ClientSock, buf, 1024, 0);
+        result = send(ClientSock, buf, buffer_size, 0);
         mpz_powm(res, B, a, N);
     }
     void ExchangeAsClient(SOCKET ServerSock)
@@ -53,12 +52,12 @@ public:
         mpz_urandomb(b, state, 1000);
         int result = 0;
         mpz_get_str(buf, 16, N);
-        result = send(ServerSock, buf, 1024, 0);
+        result = send(ServerSock, buf, buffer_size, 0);
         result = recv(ServerSock, buf, buffer_size, 0);
         mpz_init_set_str(P, buf, 16);
         mpz_powm(B, P, b, N);
         mpz_get_str(buf, 16, B);
-        result = send(ServerSock, buf, 1024, 0);
+        result = send(ServerSock, buf, buffer_size, 0);
         result = recv(ServerSock, buf, buffer_size, 0);
         mpz_init_set_str(A, buf, 16);
         mpz_powm(res, A, b, N);
@@ -72,9 +71,11 @@ public:
 };
 int main()
 {
-    int client_socket;
+    SOCKET  ClientSocket=0;
+    int result;
     DiffieHellman sock;
     DesProxy crypter;
+    SOCKET ListenSocket=0;
     std::string Message = "Privet drug";
     std::string  Key = "1234567";
     std::vector<unsigned char> message;
@@ -82,10 +83,9 @@ int main()
     {
         message.push_back(Message[i]);
     }
-    const int max_client_buffer_size = 1024;
     char *buf;
     WSADATA wsaData;
-    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    result= WSAStartup(MAKEWORD(2, 2), &wsaData);
     struct addrinfo* addr = NULL;
     struct addrinfo hints;
     ZeroMemory(&hints, sizeof(hints));
@@ -99,30 +99,30 @@ int main()
     {
         WSACleanup();
     }
-    int listen_socket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-    if (listen_socket == INVALID_SOCKET)
+    ListenSocket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+    if (ListenSocket == INVALID_SOCKET)
     {
         freeaddrinfo(addr);
         WSACleanup();
     }
-    result = bind(listen_socket, addr->ai_addr, (int)addr->ai_addrlen);
+    result = bind(ListenSocket, addr->ai_addr, (int)addr->ai_addrlen);
     if (result == SOCKET_ERROR)
     {
-        result = connect(listen_socket, addr->ai_addr, (int)addr->ai_addrlen);
+        result = connect(ListenSocket, addr->ai_addr, (int)addr->ai_addrlen);
         checkmode = false;
     }
     if (checkmode)
     {
         std::cout << "Waiting for connection...\n";
-        if (listen(listen_socket, SOMAXCONN) == SOCKET_ERROR)
+        if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR)
         {
-            closesocket(listen_socket);
+            closesocket(ListenSocket);
             WSACleanup();
         }
-        client_socket = accept(listen_socket, NULL, NULL);
-        if (client_socket == INVALID_SOCKET)
+        ClientSocket = accept(ListenSocket, NULL, NULL);
+        if (ClientSocket == INVALID_SOCKET)
         {
-            closesocket(listen_socket);
+            closesocket(ListenSocket);
             WSACleanup();
         }
         std::cout << "Connected\n";
@@ -131,11 +131,11 @@ int main()
     std::cout << "Starting diffie-hellman exchange\n";
     if (checkmode)
     {
-        sock.ExchangeAsServer(client_socket);
+        sock.ExchangeAsServer(ClientSocket);
     }
     else
     {
-        sock.ExchangeAsClient(listen_socket);
+        sock.ExchangeAsClient(ListenSocket);
     }
     std::cout << "Done";
     system("cls");
@@ -149,7 +149,7 @@ int main()
     if (checkmode)
     {
         message.clear();
-        result = recv(client_socket, buf, 1024, 0);
+        result = recv(ClientSocket, buf, 1024, 0);
         std::cout << "Recieved message\n";
         for (int i = 0; i < result; i++)
         {
@@ -173,7 +173,7 @@ int main()
             buffer[i] = crypter.GetEncData().at(i);
         }
         std::cout << "Sending off message\n";
-        result = send(listen_socket, buffer, crypter.GetEncData().size(), 0);
+        result = send(ListenSocket, buffer, crypter.GetEncData().size(), 0);
         system("cls");
         std::cout << "Message sent\n";
         for (int i = 0; i < result; i++)
@@ -181,6 +181,10 @@ int main()
             std::cout << buffer[i];
         }
     }
+    closesocket(ClientSocket);
+    closesocket(ListenSocket);
+    freeaddrinfo(addr);
+    WSACleanup();
     int A;
     std::cin >> A;
 }
